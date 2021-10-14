@@ -105,7 +105,7 @@ int main()
 				window.close();
 				break;
 
-			case sf::Event::KeyPressed: //Press Esc to close
+			case sf::Event::KeyPressed: // Press Esc to close
 				if (ev.key.code == sf::Keyboard::Escape)
 					window.close();
 				break;
