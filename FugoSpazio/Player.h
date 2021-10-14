@@ -20,7 +20,7 @@ public:
 
 
 	sf::Vector2f GetPosition() { return body.getPosition(); }
-
+	FloatRect getGlobalBounds() { return body.getGlobalBounds(); }
 	Collider GetCollider() {  return Collider(body); }
 
 private:
@@ -33,8 +33,6 @@ private:
 
 	sf::Vector2f velocity;
 	float totalTime = 0.0f;
-	float switchTime;
-	
 
 };
 

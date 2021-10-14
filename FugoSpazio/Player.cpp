@@ -4,12 +4,11 @@
 #include <SFML/Window.hpp>
 
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed):
-	animation(texture, imageCount, switchTime,speed)
+	animation(texture, imageCount, switchTime, speed)
 {
 	this->speed = speed;
 	row = 0;
 	faceRight = true;
-
 
 	body.setSize(sf::Vector2f(80.0f, 80.0f));
 	body.setOrigin(body.getSize() / 2.0f);
