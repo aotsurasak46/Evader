@@ -22,7 +22,7 @@ bool Collider::CheckCollision(Collider other,  float push)
     float intersectX = abs(deltaX) - (otherHalfSize.x + thisHalfSize.x);
     float intersectY = abs(deltaY) - (otherHalfSize.y + thisHalfSize.y);
 
-    if (intersectX <= 0.0f && intersectY <= 0.0f)
+    if (intersectX < 0.0f && intersectY < 0.0f)
     {
         push = std::min(std::max(push, 0.0f), 1.0f);
 

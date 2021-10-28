@@ -7,8 +7,8 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-using namespace sf; // sfml
-using namespace std; // standard
+using namespace sf;     // sfml
+using namespace std;    // standard
 
 inline Vector2f normalize(Vector2f vec)
 {
@@ -20,5 +20,7 @@ inline Vector2f normalize(Vector2f vec)
 
 inline int randint(int start, int stop)
 {
+
     return (rand() % (stop - start)) + start;
+
 }

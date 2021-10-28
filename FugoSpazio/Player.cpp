@@ -2,6 +2,7 @@
 #include "Animation.h"
 #include <iostream>
 #include <SFML/Window.hpp>
+#define MAX_HP 3
 
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed):
 	animation(texture, imageCount, switchTime, speed)
@@ -10,15 +11,47 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
 	row = 0;
 	faceRight = true;
 
-	body.setSize(sf::Vector2f(80.0f, 80.0f));
+	body.setSize(sf::Vector2f(60.0f, 60.0f));
 	body.setOrigin(body.getSize() / 2.0f);
 	body.setPosition(600.0f, 500.0f);
 	body.setTexture(texture);
+
+	HP = 3;
+	totalTime = 0;
+
+	heartTexture.loadFromFile("pic/heart.png");
+	for (int i = 0; i < HP; i++)
+	{
+		hearts.push_back(sf::Sprite(heartTexture));
+		hearts[i].setPosition(sf::Vector2f(0 + (70 * i), 20));
+		hearts[i].setScale(0.08, 0.08);
+	}
 }
 
 Player::~Player()
 {
+
 }
+
+
+void Player::LooseHP()
+{
+	HP -= 1;
+	if (HP < 0)
+	{
+		HP = 0;
+	}
+}
+
+void Player::GainHP()
+{
+	HP += 1;
+	if (HP > MAX_HP)
+	{
+		HP = MAX_HP;
+	}
+}
+
 
 
 void Player::Update(float deltatime)
@@ -56,20 +89,25 @@ void Player::Update(float deltatime)
 		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
+
 			velocity.x *= 3;
+
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
+
 			velocity.x *= 3;
 
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
+
 			velocity.y *= 3;
 
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
+
 			velocity.y *= 3;
 
 		}		
@@ -91,4 +129,12 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(body);
 }
 
+void Player::drawHeart(sf::RenderWindow& window)
+{
+	for (int i = 0; i < HP; i++)
+	{
+		window.draw(hearts[i]);
+	}
+
+}
 

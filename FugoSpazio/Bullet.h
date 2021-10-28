@@ -13,14 +13,12 @@ private:
 
 public:
 	
-	Bullet(sf::Texture* texture, sf::Vector2f size, sf::Vector2f position, Vector2f direction, float speed);
+	Bullet( sf::Vector2f size, sf::Vector2f position, Vector2f direction, float speed);
 	~Bullet();
-	
-	void fire(float x,float y);
 
 	void Update(float deltaTime);
 	void Draw(sf::RenderWindow& window);
-	
+
 	inline sf::Vector2f getPos() { return bullet.getPosition(); }
 	FloatRect getGlobalBounds() { return bullet.getGlobalBounds(); }
 	inline Collider GetCollider() { return Collider(bullet); }
