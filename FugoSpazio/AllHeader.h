@@ -1,4 +1,5 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
@@ -6,6 +7,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
+#include <utility>
+#include <algorithm>
+#include <string.h>
+#include <sstream>
 
 using namespace sf;     // sfml
 using namespace std;    // standard

@@ -20,7 +20,7 @@ public:
 	void Draw(sf::RenderWindow& window);
 
 	inline sf::Vector2f getPos() { return bullet.getPosition(); }
-	FloatRect getGlobalBounds() { return bullet.getGlobalBounds(); }
+	sf::FloatRect getGlobalBounds() { return bullet.getGlobalBounds(); }
 	inline Collider GetCollider() { return Collider(bullet); }
 	inline bool isOutOfScreen()
 	{

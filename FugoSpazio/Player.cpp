@@ -37,10 +37,6 @@ Player::~Player()
 void Player::LooseHP()
 {
 	HP -= 1;
-	if (HP < 0)
-	{
-		HP = 0;
-	}
 }
 
 void Player::GainHP()
@@ -54,13 +50,23 @@ void Player::GainHP()
 
 
 
-void Player::Update(float deltatime)
+void Player::Update(float deltatime,bool isSpeedBoost)
 {
-	
+
 	velocity.x = 0.0f;
 	velocity.y = 0.0f;
 
 	totalTime += deltatime;
+
+	if (isSpeedBoost)
+	{
+		speed = 500;
+	}
+	else
+	{
+		speed = 200;
+	}
+
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) )
 	{
@@ -84,44 +90,22 @@ void Player::Update(float deltatime)
 	}
 
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-	{
-		
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-
-			velocity.x *= 3;
-
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-
-			velocity.x *= 3;
-
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		{
-
-			velocity.y *= 3;
-
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-
-			velocity.y *= 3;
-
-		}		
-		
-	}
-
 	if (velocity.x == 0.0f && velocity.y==0.0f)
 	{
 		row = 4;
 	}
 
-	animation.Update(row, deltatime, faceRight);
-	body.setTextureRect(animation.uvRect);
+
+
+	if (deltatime != 0)
+	{
+		animation.Update(row, deltatime, faceRight);		
+		body.setTextureRect(animation.uvRect);
+	}
+	
+	
 	body.move(velocity * deltatime);
+
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -135,6 +119,8 @@ void Player::drawHeart(sf::RenderWindow& window)
 	{
 		window.draw(hearts[i]);
 	}
-
 }
+
+
+
 

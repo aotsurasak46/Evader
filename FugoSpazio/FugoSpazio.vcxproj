@@ -157,7 +157,10 @@
     <ClInclude Include="AllHeader.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Coffee.h" />
+    <ClInclude Include="Coin.h" />
     <ClInclude Include="Collider.h" />
+    <ClInclude Include="Heart.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />

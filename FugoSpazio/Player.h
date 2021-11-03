@@ -17,12 +17,13 @@ public:
 
 	void LooseHP();
 	void GainHP();
+	inline int getHP() { return HP; }
 
-	void Update(float deltatime);
+	void Update(float deltatime, bool isSpeedBoost);
 	void Draw(sf::RenderWindow& window);
 
 	void drawHeart(sf::RenderWindow& window);
-
+	void drawDead(sf::RenderWindow& window);
 
 	sf::Vector2f GetPosition() { return body.getPosition(); }
 	FloatRect getGlobalBounds() { return body.getGlobalBounds(); }
@@ -33,14 +34,17 @@ private:
 	sf::RectangleShape body;
 	
 	std::vector<sf::Sprite> hearts;
+
 	sf::Texture heartTexture;
+	sf::Texture playerDeadTexture;
 
 	Animation animation;
 	unsigned int row;
-	float speed;
+	float speed ;
 	bool faceRight;
 
 	int HP ;
+	bool isDead;
 
 	sf::Vector2f velocity;
 	float totalTime ;

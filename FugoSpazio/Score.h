@@ -16,13 +16,13 @@ public:
 		scoreTopic.setString("Score");
 		scoreTopic.setCharacterSize(60);
 		scoreTopic.setFillColor(sf::Color::White);
-		scoreTopic.setPosition(sf::Vector2f(30, 100));
+		scoreTopic.setPosition(sf::Vector2f(25, 100));
 
 
 		_scoreText.setFont(font);
 		_scoreText.setString("0");
 		_scoreText.setCharacterSize(36);
-		_scoreText.setFillColor(sf::Color::White);
+		
 		_scoreText.setPosition(sf::Vector2f(10,170));
 
 	}
@@ -38,12 +38,16 @@ public:
 		window.draw(_scoreText);
 	}
 
-	inline void UpdateScore(float deltatime)
+	inline void UpdateScore(float deltatime,int bonus)
 	{
-		int score = 0;
-		scoreTime += deltatime;
-		score = scoreTime * 100 * scoreSpeed;
+		scoreTime += deltatime;		
+		score = (scoreTime * 100 ) + bonus ;
 		_scoreText.setString(std::to_string(score));
+	}
+
+	inline int getScore()
+	{
+		return score;
 	}
 
 private:
@@ -51,8 +55,9 @@ private:
 	sf::Text scoreTopic;
 	sf::Text _scoreText;
 	sf::Font font;
+
 	float scoreTime = .0f;
-	int scoreSpeed = 1;
+	int score = 0;
 	
 };
 
