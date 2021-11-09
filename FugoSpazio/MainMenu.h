@@ -93,8 +93,6 @@ public:
 			mainMenu[MainMenuSelected].setFillColor(sf::Color::Blue);
 			mainMenu[MainMenuSelected - 1].setFillColor(sf::Color::White);
 		}
-
-		
 	}
 
 	int MainMenuPressed() { return MainMenuSelected; }

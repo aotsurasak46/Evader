@@ -10,6 +10,77 @@
 #include "Heart.h"
 #include <time.h>
 
+void ScoreBoard(string PlayerName, unsigned int PlayerScore)
+{
+	FILE* fp;
+	char temp[255];
+	unsigned int score[6];
+	string name[6];
+	vector<pair<unsigned int, string>> userScore;
+	fp = fopen("./score.txt", "r");
+	for (int i = 0; i < 5; i++)
+	{
+		fscanf(fp, "%s", &temp);
+		name[i] = temp;
+		fscanf(fp, "%d", &score[i]);
+		userScore.push_back(make_pair(score[i], name[i]));
+	}
+	name[5] = PlayerName;
+	score[5] = PlayerScore;
+	userScore.push_back(make_pair(score[5], name[5]));
+	sort(userScore.begin(), userScore.end());
+	fclose(fp);
+	fopen("./score.txt", "w");
+	for (int i = 5; i >= 1; i--)
+	{
+		strcpy(temp, userScore[i].second.c_str());
+		fprintf(fp, "%s %d\n", temp, userScore[i].first);
+	}
+	fclose(fp);
+}
+
+void ReadScore(sf::RenderWindow &window)
+{
+	sf::Font font;
+	if (!font.loadFromFile("font/Hypeblox-L3YGZ.ttf"))
+	{
+		cout << "No font is here";
+	}
+
+	sf::Text playerName[5];
+	sf::Text playerScore[5];
+
+	FILE* fp;
+	char temp[255];
+	unsigned int score[5];
+	string name[5];
+	fp = fopen("./score.txt", "r");
+	for (int i = 0; i < 5; i++)
+	{
+		fscanf(fp, "%s", &temp);
+		name[i] = temp;
+		fscanf(fp, "%d", &score[i]);
+	}
+	fclose(fp);
+	for (size_t i = 0; i < 5; i++)
+	{
+		playerName[i].setString(name[i]);
+		playerName[i].setFont(font);
+		playerName[i].setCharacterSize(60);
+		playerName[i].setPosition(125, 400 + 70*i);
+		playerName[i].setFillColor(sf::Color::Black);
+
+		playerScore[i].setString(std::to_string(score[i]));
+		playerScore[i].setFont(font);
+		playerScore[i].setCharacterSize(60);
+		playerScore[i].setPosition(650, 400 + 70 * i);
+		playerScore[i].setFillColor(sf::Color::Black);
+
+		window.draw(playerName[i]);
+		window.draw(playerScore[i]);
+	}
+}
+
 
 void spawnBullet(vector<Bullet>& bullets)
 {
@@ -48,16 +119,6 @@ void spawnBullet(vector<Bullet>& bullets)
 }
 
 
-
-bool gameRunning ;
-
-void gameOver()
-{
-	gameRunning = false;
-
-}
-
-
 void DrawGameOverWindow(sf::RenderWindow& window,unsigned int score)
 {
 	sf::Font font;
@@ -75,6 +136,7 @@ void DrawGameOverWindow(sf::RenderWindow& window,unsigned int score)
 	sf::Text gameOverScore;
 	sf::Text _scoreText;
 	sf::Text gameOverExit;
+	sf::Text enterNameText;
 
 	gameOverBackground.setPosition(sf::Vector2f(400,300));
 	gameOverBackground.setSize(sf::Vector2f(400,400));
@@ -98,20 +160,30 @@ void DrawGameOverWindow(sf::RenderWindow& window,unsigned int score)
 	_scoreText.setFillColor(sf::Color::Red);
 	_scoreText.setPosition(sf::Vector2f(610, 403));
 
+	enterNameText.setFont(font);
+	enterNameText.setString("Enter the name");
+	enterNameText.setCharacterSize(40);
+	enterNameText.setFillColor(sf::Color::White);
+	enterNameText.setPosition(sf::Vector2f(445, 460));
+
+
 	gameOverExit.setFont(font);
 	gameOverExit.setFillColor(sf::Color::Red);
-	gameOverExit.setString("Press ESC to Exit");
-	gameOverExit.setCharacterSize(42);
-	gameOverExit.setPosition(sf::Vector2f(425,620));	
+	gameOverExit.setString("Press Enter to Exit");
+	gameOverExit.setCharacterSize(38);
+	gameOverExit.setPosition(sf::Vector2f(420,625));	
 
 	window.draw(gameOverBackground);
 	window.draw(gameOverText);
 	window.draw(gameOverScore);
 	window.draw(_scoreText);
+	window.draw(enterNameText);
 	window.draw(gameOverExit);
 
 
 }
+
+bool gameRunning;
 
 int main()
 {
@@ -136,6 +208,39 @@ int main()
 	sf::Texture coinItemTexture;
 	sf::Texture heartItemTexture;
 	
+	sf::Music gameMusic;
+	sf::Music menuMusic;
+	sf::Music gameOverSound;
+	sf::Music scoreMusic;
+	if (!gameMusic.openFromFile("sound/gameMusic.ogg"))
+	{
+		cout << "No Sound is here";
+	}
+	gameMusic.setVolume(30);
+	gameMusic.setLoop(true);
+
+	if (!menuMusic.openFromFile("sound/menuMusic.ogg"))
+	{
+		cout << "No Sound is here";
+	}
+	menuMusic.setVolume(30);
+	menuMusic.setLoop(true);
+
+
+	if (!gameOverSound.openFromFile("sound/gameOverSound.wav"))
+	{
+		cout << "No Sound is here";
+	}
+	gameOverSound.setVolume(30);
+	gameOverSound.setLoop(false);
+
+	if (!scoreMusic.openFromFile("sound/scoreMusic.ogg"))
+	{
+		cout << "No Sound is here";
+	}
+	scoreMusic.setVolume(30);
+	scoreMusic.setLoop(true);
+
 	sf::Font font;
 	if (!font.loadFromFile("font/Hypeblox-L3YGZ.ttf"))
 	{
@@ -159,22 +264,27 @@ int main()
 	sf::Sprite m(mapTexture);
 	sf::Sprite mainbg(mainMenuBg);
 	
-	
-	float deltaTime = 0.0f;
 
+	float deltaTime = 0.0f;
 
 	float currentTimeBullet = 0.0f;
 	float currentTimeItem = 0.0f;
 	float currentTimeSpeedBoost = 0.0f;
 
-	float bulletSpawnTime = .4f;
-	float itemSpawnTime = 20.0f;
-	float speedBoostTime = 10.0f;
+	float bulletSpawnTime = .3f;
+	float itemSpawnTime = 10.0f;
+	float speedBoostTime = 8.0f;
+	
+	
+	menuMusic.play();
 
 	
 	while (Menu.isOpen())
 	{
+
 		sf::Event menuEvent;
+		
+
 		while (Menu.pollEvent(menuEvent))
 		{
 			switch (menuEvent.type)
@@ -202,7 +312,7 @@ int main()
 				case sf::Keyboard::Return:
 
 					int x = mainMenu.MainMenuPressed();
-
+					menuMusic.stop();
 
 					if (x == 0)
 					{
@@ -223,6 +333,43 @@ int main()
 						std::vector<Coin> coins;
 						std::vector<Heart> hearts;
 
+						sf::String playerInput;
+						sf::Text playerText;
+
+						sf::SoundBuffer laserSoundBuffer;
+						sf::SoundBuffer getItemSoundBuffer;
+
+						sf::Sound laserSound;
+						laserSoundBuffer.loadFromFile("sound/laserSound.ogg");
+						sf::Sound getItemSound;
+						getItemSoundBuffer.loadFromFile("sound/getItem.ogg");
+
+						sf::Texture UFOTexture;
+						UFOTexture.loadFromFile("pic/UFO.png");
+						sf::Texture fireballTexture;
+						fireballTexture.loadFromFile("pic/fireball.png");
+
+						sf::Sprite UFO(UFOTexture);
+						UFO.setScale(0.3, 0.3);
+						UFO.setPosition(10, 700);
+
+						sf::Sprite fireball(fireballTexture);
+						fireball.setScale(0.3, 0.3);
+						fireball.setPosition(20, 500);
+
+						laserSound.setBuffer(laserSoundBuffer);
+						laserSound.setLoop(false);
+						laserSound.setVolume(50);
+
+						getItemSound.setBuffer(getItemSoundBuffer);
+						getItemSound.setLoop(false);
+						getItemSound.setVolume(50);
+
+						playerText.setCharacterSize(40);
+						playerText.setPosition(430, 520);
+						playerText.setFont(font);
+						playerText.setFillColor(sf::Color::White);
+
 						platforms.push_back(Platform(&upperWallTexture, sf::Vector2f(600.0f, 100.0f), sf::Vector2f(600.0f, 50.0f)));
 						platforms.push_back(Platform(&leftWallTexture, sf::Vector2f(100.0f, 800.0f), sf::Vector2f(250.0f, 500.0f)));
 						platforms.push_back(Platform(&lowerWallTexture, sf::Vector2f(600.0f, 100.0f), sf::Vector2f(600.0f, 950.0f)));
@@ -239,6 +386,8 @@ int main()
 
 						gameRunning = true;
 
+						gameMusic.play();
+
 						sf::Clock clock;
 						while (window.isOpen())
 						{
@@ -252,14 +401,52 @@ int main()
 								{
 								case sf::Event::Closed:
 									window.close();
+									gameMusic.stop();
+									menuMusic.play();
 									break;
 
 								case sf::Event::KeyPressed: // Press Esc to close
 									if (gameEvent.key.code == sf::Keyboard::Escape)
 									{
 										window.close();
+										gameMusic.stop();
+										menuMusic.play();
 									}
 									break;	
+								case sf::Event::KeyReleased:
+									if (!gameRunning)
+									{
+										if (gameEvent.key.code == sf::Keyboard::Return)
+										{
+											window.close();
+											menuMusic.play();
+											if (playerInput.isEmpty())
+											{
+												playerInput = "Anonymous";
+											}
+											
+											ScoreBoard(playerInput, score.getScore());
+										}
+
+									}
+								case sf::Event::TextEntered:
+									if (!gameRunning)
+									{
+										
+										if (gameEvent.text.unicode > 96 && gameEvent.text.unicode < 123 && playerInput.getSize() < 15)
+										{
+											playerInput += gameEvent.text.unicode;
+											
+										}
+										else if (gameEvent.key.code == sf::Keyboard::Backspace && playerInput.getSize() > 0)
+										{
+											playerInput.erase(playerInput.getSize() - 1);
+										}
+
+										
+										playerText.setString(playerInput);
+
+									}			
 								}
 							}
 
@@ -280,20 +467,16 @@ int main()
 							if (currentTimeItem >= itemSpawnTime)
 							{
 								currentTimeItem -= itemSpawnTime;
-								cout << "Item Spawn";
 								itemType = randint(0,3);
 								switch(itemType)
 								{
 								case 0:
-									cout << "Coffee\n";
 									cupOfCoffee.push_back(Coffee(coffeeItemTexture, sf::Vector2f(randint(300, 850), randint(100, 850)), sf::Vector2f(0.25f, 0.25f)));
 									break;
 								case 1:
-									cout << "Coin\n";
 									coins.push_back(Coin(coinItemTexture, sf::Vector2f(randint(300, 850), randint(100, 850)), sf::Vector2f(0.1f, 0.1f)));
 									break;
 								case 2:
-									cout << "Heart\n";
 									hearts.push_back(Heart(heartItemTexture, sf::Vector2f(randint(300, 850), randint(100, 850)), sf::Vector2f(0.1f, 0.1f)));
 									break;
 								default:
@@ -314,10 +497,11 @@ int main()
 								{
 									bullets.erase(bullets.begin() + i);
 									player.LooseHP();
+									laserSound.play();
 									if (player.getHP() == 0)
 									{
-										gameOver();	
-										
+										gameRunning = false;
+										gameOverSound.play();
 									}
 								}
 								else if (bullets[i].isOutOfScreen())
@@ -334,6 +518,7 @@ int main()
 								{
 									cupOfCoffee.erase(cupOfCoffee.begin() + i);
 									isSpeedBoost = true;
+									getItemSound.play();
 								}
 							}
 
@@ -343,6 +528,7 @@ int main()
 								{
 									coins.erase(coins.begin() + i);
 									coinBonus += 2000;
+									getItemSound.play();
 								}
 
 							}
@@ -350,8 +536,10 @@ int main()
 							{
 								if (hearts[i].getGlobalBounds().intersects(player.getGlobalBounds()))
 								{
+									
 									hearts.erase(hearts.begin() + i);
 									player.GainHP();
+									getItemSound.play();
 								}
 							}
 
@@ -373,7 +561,7 @@ int main()
 							// ↓ Drawing Part
 							window.clear();
 							window.draw(m);
-
+							
 							for (int i = 0; i < cupOfCoffee.size(); i++)
 							{
 								cupOfCoffee[i].drawCoffee(window);
@@ -404,14 +592,17 @@ int main()
 
 							score.draw(window);
 							player.drawHeart(window);
-
-							
-
+							window.draw(UFO);
+							window.draw(fireball);
 
 							if (!gameRunning)
 							{							
 								//Draw Gameover Menu
 								DrawGameOverWindow(window,score.getScore());
+								gameMusic.stop();
+
+								window.draw(playerText);
+
 							}
 
 							window.display();
@@ -426,32 +617,98 @@ int main()
 						//--------------------------------------Score-----------------------------------------------//
 
 						sf::RenderWindow ScoreWindow(sf::VideoMode(1000, 1000), "Scoreboard", sf::Style::Close);
+						ScoreWindow.setVerticalSyncEnabled(true);
 
+						sf::Texture scoreBoardTexture;
+						sf::Texture scoreBgTexture;
 
+						scoreBoardTexture.loadFromFile("pic/boardTexture.png");
+						scoreBgTexture.loadFromFile("pic/scorebg.jpg");
+
+						sf::Sprite scoreBg(scoreBgTexture);
+						scoreBg.setScale(0.56, 0.56);
+
+						sf::Sprite scoreBoard(scoreBoardTexture);
+						scoreBoard.setScale(0.12, 0.12);
+						scoreBoard.setPosition(20, 200);
+
+						sf::Text scoreBoardText;
+						scoreBoardText.setFont(font);
+						scoreBoardText.setString("ScoreBoard");
+						scoreBoardText.setCharacterSize(120);
+						scoreBoardText.setPosition(200,25);
+						scoreBoardText.setFillColor(sf::Color::Red);
+
+						sf::Text nameText;
+						nameText.setFont(font);
+						nameText.setString("Name");
+						nameText.setCharacterSize(70);
+						nameText.setPosition(125, 300);
+						nameText.setFillColor(sf::Color::Magenta);
+
+						sf::Text scoreText;
+						scoreText.setFont(font);
+						scoreText.setString("Score");
+						scoreText.setCharacterSize(70);
+						scoreText.setPosition(650, 300);
+						scoreText.setFillColor(sf::Color::Magenta);
+
+						sf::Text backText;
+						backText.setFont(font);
+						backText.setString("BACK");
+						backText.setCharacterSize(80);
+						backText.setPosition(25, 900);
+						backText.setFillColor(sf::Color::Blue);
+
+						scoreMusic.play();
+
+						
 						while (ScoreWindow.isOpen())
 						{
 							sf::Event scoreboardEvent;
-							switch (ScoreWindow.pollEvent(scoreboardEvent))
+							while(ScoreWindow.pollEvent(scoreboardEvent))
 							{
-							case sf::Event::Closed:
-								ScoreWindow.close();
-								break;
-
-							case sf::Event::KeyPressed: // Press Esc to close
-								if (scoreboardEvent.key.code == sf::Keyboard::Escape)
+								switch (scoreboardEvent.type)
 								{
+								case sf::Event::Closed:
+									scoreMusic.stop();
 									ScoreWindow.close();
+									menuMusic.play();
+									break;
+
+								case sf::Event::KeyPressed: // Press Esc to close
+									if (scoreboardEvent.key.code == sf::Keyboard::Escape)
+									{
+										scoreMusic.stop();
+										ScoreWindow.close();
+										menuMusic.play();
+									}
+									break;
+									
+								case sf::Event::KeyReleased:
+									if (scoreboardEvent.key.code == sf::Keyboard::Return)
+									{
+										scoreMusic.stop();
+										ScoreWindow.close();
+										menuMusic.play();
+									}
+									break;
 								}
-								break;
 							}
 
+							ScoreWindow.draw(scoreBg);
+							ScoreWindow.draw(scoreBoard);
+							ScoreWindow.draw(scoreBoardText);
+							ScoreWindow.draw(nameText);
+							ScoreWindow.draw(scoreText);
+							ScoreWindow.draw(backText);
+							
+
+							ReadScore(ScoreWindow);
+
+							ScoreWindow.display();
 						}
-
-
-
-
 						
-						ScoreWindow.display();
 					}
 
 					else if (x == 2)
@@ -460,15 +717,13 @@ int main()
 					}
 				}
 			}
-		}
-	
+		}	
 
 		Menu.clear();
 		Menu.draw(mainbg);
 		mainMenu.draw(Menu);
 		Menu.display();
 	}
-
 
 	return 0;
 }

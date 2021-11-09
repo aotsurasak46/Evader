@@ -53,6 +53,7 @@ void Player::GainHP()
 void Player::Update(float deltatime,bool isSpeedBoost)
 {
 
+	
 	velocity.x = 0.0f;
 	velocity.y = 0.0f;
 
@@ -72,21 +73,25 @@ void Player::Update(float deltatime,bool isSpeedBoost)
 	{
 		row = 3;
 		velocity.x -= speed ;
+		
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) )
 	{
 		row = 1;
 		velocity.x += speed ;
+
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
 	{
 		row = 2;
 		velocity.y -= speed ;
+
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) )
 	{
 		row = 0;
 		velocity.y += speed ;
+
 	}
 
 
