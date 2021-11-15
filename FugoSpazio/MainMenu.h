@@ -37,6 +37,18 @@ public:
 		mainMenu[2].setCharacterSize(200);
 		mainMenu[2].setPosition(50, 700);
 
+		myName.setFont(font);
+		myName.setFillColor(sf::Color::White);
+		myName.setString("Surasak Tansudjaroenying");
+		myName.setCharacterSize(40);
+		myName.setPosition(480, 890);		
+		
+		studentNumber.setFont(font);
+		studentNumber.setFillColor(sf::Color::White);
+		studentNumber.setString("64010935");
+		studentNumber.setCharacterSize(40);
+		studentNumber.setPosition(800, 940);
+
 		MainMenuSelected = 0;
 	}
 
@@ -60,6 +72,8 @@ public:
 		}
 		window.draw(gameName);
 		window.draw(dog);
+		window.draw(myName);
+		window.draw(studentNumber);
 	}
 
 	inline void MoveUp()
@@ -104,6 +118,8 @@ private:
 	sf::Font font;
 	sf::Text mainMenu[MAX_MAINMENU];
 	sf::Text gameName;
+	sf::Text myName;
+	sf::Text studentNumber;
 
 };
 

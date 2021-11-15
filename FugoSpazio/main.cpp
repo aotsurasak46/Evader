@@ -189,7 +189,6 @@ int main()
 {
 	//Main Menu
 	sf::RenderWindow Menu(sf::VideoMode(1000, 1000), "MainMenu", sf::Style::Close);
-	
 	srand(time(NULL));
 
 	MainMenu mainMenu(Menu.getSize().x, Menu.getSize().y);
